@@ -1,14 +1,13 @@
 ﻿name: Build, Test and Deploy a .NET Core WebApi to Azure App Service
 
 env: # Change these settings when you need to
-  ARTIFACT_NAME: WebApi
+  ARTIFACT_NAME: individueel-project-1.3-api
   DOTNET_CORE_VERSION: 8.0.x
   PUBLISH_DIRECTORY: "./out/publish"
 on:
   push:
     branches:
-      - main
-      - deployment
+      - master
   
   # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
