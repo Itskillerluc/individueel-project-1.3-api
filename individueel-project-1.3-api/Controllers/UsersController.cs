@@ -1,5 +1,6 @@
 ﻿using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -28,6 +29,7 @@ public class UsersController(ILogger<UsersController> logger, ICrudRepository<st
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult> AddUser([FromBody] User user)
     {
         if (await userRepository.GetByIdAsync(user.Username) != null) return Conflict();

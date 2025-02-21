@@ -1,5 +1,7 @@
 using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,21 +9,38 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ?? throw new ArgumentException("No connection string found in secrets.json");
+var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
+var sqlConnectionStringFound= !string.IsNullOrWhiteSpace(connectionString);
 
-builder.Services.AddSingleton<ICrudRepository<Guid, Prop>, PropRepository>(pfrovider => new PropRepository(connectionString));
-builder.Services.AddSingleton<ICrudRepository<Guid, Room>, RoomRepository>(provider => new RoomRepository(connectionString));
-builder.Services.AddSingleton<ICrudRepository<string, User>, UserRepository>(provider => new UserRepository(connectionString));
-builder.Services.AddSingleton<ICrudRepository<(string Username, Guid RoomId), UserRoom>, UserRoomRepository>(provider => new UserRoomRepository(connectionString));
+
+builder.Services.AddSingleton<ICrudRepository<Guid, Prop>, PropRepository>(_ => new PropRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<ICrudRepository<Guid, Room>, RoomRepository>(_ => new RoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<ICrudRepository<string, User>, UserRepository>(_ => new UserRepository(connectionString?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<ICrudRepository<(string Username, Guid RoomId), UserRoom>, UserRoomRepository>(_ => new UserRoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
+    {
+        //options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 10;
+    })
+    .AddRoles<IdentityRole>()
+    .AddDapperStores(options =>
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString("DapperIdentity");
+    });
 
 builder.Services.AddMvc().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.MaxDepth = 64;
 });
+    
 var app = builder.Build();
+
+
 app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
@@ -30,8 +49,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }   
 
-
 app.UseAuthorization();
-app.MapControllers();
+
+app.MapGroup("/account").MapIdentityApi<IdentityUser>();
+app.MapControllers();//.RequireAuthorization();
+
+app.MapGet("/", () => $"The API is up and running. Connection string found: {(sqlConnectionStringFound ? "Yes! :D" : "No!")}");
+app.MapPost("/account/logout",
+    async (SignInManager<IdentityUser> signInManager, [FromBody] object? empty) =>
+    {
+        if (empty == null) return Results.Unauthorized();
+        await signInManager.SignOutAsync();
+        return Results.Ok();
+
+    });
 
 app.Run();
