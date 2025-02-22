@@ -1,5 +1,6 @@
 ﻿using individueel_project_1._3_api.Controllers;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Principal;
 using System.Text.Json.Serialization;
 
 namespace individueel_project_1._3_api.Models;
@@ -18,13 +19,17 @@ public class Room(Guid roomId, string name, float width, float height, string ti
     [Required]
     public string Name { get; set; } = name;
     [Required]
+    [Range(0, 99999)]
     public float Width { get; set; } = width;
     [Required]
+    [Range(0, 99999)]
     public float Height { get; set; } = height;
     [Required] 
     public string TileId { get; set; } = tileId;
+
     public List<UserEntry> Users { get; set; } = [];
+
     public List<Prop> Props { get; set; } = [];
 
-    public record UserEntry(User User, bool IsOwner);
+    public record UserEntry([Required] string User, [Required] bool IsOwner);
 }

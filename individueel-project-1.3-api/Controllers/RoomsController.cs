@@ -1,26 +1,25 @@
 ﻿using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace individueel_project_1._3_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RoomsController(ILogger<RoomsController> logger, ICrudRepository<Guid, Room> roomRepository)
+public class RoomsController(ILogger<RoomsController> logger, ICrudRepository<Guid, Room> roomRepository, IAuthorizationService authorizationService)
     : ControllerBase
 {
     private readonly ILogger<RoomsController> _logger = logger;
 
 
     [HttpGet(Name = "GetRoom")]
-    public async Task<ActionResult<IEnumerable<Room>>> GetRoomsAsync([FromQuery] Guid? id, [FromQuery] string? owner)
+    public async Task<ActionResult<IEnumerable<Room>>> GetRoomsAsync([FromQuery] Guid? id)
     {
-        if (id is null && owner is null)
-        {
-            return Ok(await roomRepository.GetAllAsync());
-        }
-        IEnumerable<Room> rooms = owner != null ? (await roomRepository.GetAllAsync()).Where(room => room.Users.Any(usr => usr.IsOwner)) : await roomRepository.GetAllAsync();
-        IEnumerable<Room> result = id != null ? rooms.Where(room => room.RoomId.Equals(id)) : rooms;
+        var user = User.Identity;
+        
+        var rooms = (await roomRepository.GetAllAsync()).Where(room => room.Users.Any(usr => usr.User.Equals(user)));
+        var result = id != null ? rooms.Where(room => room.RoomId.Equals(id)) : rooms;
         
         if (id != null && !result.Any()) return NotFound();
 
@@ -30,7 +29,8 @@ public class RoomsController(ILogger<RoomsController> logger, ICrudRepository<Gu
     [HttpPost]
     public async Task<ActionResult> AddRoomAsync([FromBody] Room room)
     {
-        //Todo: add validation
+        var userName = User.Identity?.Name;
+        if (userName == null) return Unauthorized();
         if (await roomRepository.GetByIdAsync(room.RoomId) != null) return Conflict();
         await roomRepository.AddAsync(room);
         return CreatedAtRoute("GetRoom", new { roomId = room.RoomId }, room);

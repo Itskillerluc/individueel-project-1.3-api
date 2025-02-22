@@ -1,5 +1,7 @@
+using individueel_project_1._3_api.Authorization;
 using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +22,26 @@ builder.Services.AddSingleton<ICrudRepository<(string Username, Guid RoomId), Us
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
+//builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
+//Todo: policies and claims
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UserPolicy", policy =>
+        policy.Requirements.Add(new SameUserRequirement()));
+});
 
-builder.Services.AddAuthorization();
+builder.Services.AddSingleton<IAuthorizationHandler,  DoesUserMatchAuthenticationHandler<User>>(_ => new DoesUserMatchAuthenticationHandler<User>(user => user.Username));
+
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
     {
         //options.User.RequireUniqueEmail = true;
         options.Password.RequiredLength = 10;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
     })
     .AddRoles<IdentityRole>()
     .AddDapperStores(options =>
@@ -48,11 +64,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }   
+app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
-app.MapControllers();//.RequireAuthorization();
+app.MapControllers().RequireAuthorization();
 
 app.MapGet("/", () => $"The API is up and running. Connection string found: {(sqlConnectionStringFound ? "Yes! :D" : "No!")}");
 app.MapPost("/account/logout",

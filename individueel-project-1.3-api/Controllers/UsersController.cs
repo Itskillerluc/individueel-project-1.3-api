@@ -6,9 +6,10 @@ using Microsoft.Data.SqlClient;
 
 namespace individueel_project_1._3_api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class UsersController(ILogger<UsersController> logger, ICrudRepository<string, User> userRepository)
+//[ApiController]
+//[Route("api/[controller]")]
+//Todo look if this is even still needed
+public class UsersController(ILogger<UsersController> logger, ICrudRepository<string, User> userRepository, IAuthorizationService authorizationService)
     : ControllerBase
 {
     private readonly ILogger<UsersController> _logger = logger;
@@ -16,15 +17,33 @@ public class UsersController(ILogger<UsersController> logger, ICrudRepository<st
     [HttpGet]
     public async Task<ActionResult<IEnumerable<(bool, string)>>> GetUsersAsync([FromQuery] string? username)
     {
+        
         if (username is null)
         {
             var user = await userRepository.GetAllAsync();
+            
+            
             return Ok(user);
         }
         else
         {
             var user = await userRepository.GetByIdAsync(username);
-            return user == null ? NotFound() : Ok(user);
+            
+            if (user == null)
+            {
+                //Todo ask if this should be a 404 or a 403 (not found or forbidden)
+                return NotFound();
+            }
+            
+            var authorizationResult = await authorizationService
+                .AuthorizeAsync(User, user, "UserPolicy");
+            
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+            
+            return Ok(user);
         }
     }
 

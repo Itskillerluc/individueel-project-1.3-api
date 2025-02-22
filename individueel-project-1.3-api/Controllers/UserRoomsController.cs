@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace individueel_project_1._3_api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+// [ApiController]
+// [Route("api/[controller]")]
+//todo see if this is rly needed
 public class UserRoomsController(
     ILogger<UserRoomsController> logger,
     ICrudRepository<(string Username, Guid RoomId), UserRoom> userRoomRepository)

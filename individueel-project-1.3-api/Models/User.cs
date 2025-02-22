@@ -8,12 +8,15 @@ public class User(string username, string password)
 {
     public User(string username, string password, List<RoomEntry> rooms) : this(username, password)
     {
-        this.Username = username;
-        this.Rooms = rooms;
+        Username = username;
+        Rooms = rooms;
     }
 
     [Required]
+    [EmailAddress]
     public string Username { get; set; } = username;
+    
+    //todo: implement in unity
     [Required]
     public string Password { get; set; } = password;
 

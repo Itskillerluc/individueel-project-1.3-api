@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 
 namespace individueel_project_1._3_api.Repositories;
 
+//unused
 public class UserRepository(string connectionString) : ICrudRepository<string, User>
 {
     private readonly string _connectionString = connectionString;

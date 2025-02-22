@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Security.Principal;
+using Dapper;
 using individueel_project_1._3_api.Models;
 using Microsoft.Data.SqlClient;
 
@@ -55,10 +56,10 @@ public class RoomRepository(string connectionString) : ICrudRepository<Guid, Roo
 
         var result = connection.Query(sql);
 
-        var rooms = await connection.QueryAsync<Room, bool, User, Prop, Room>(sql, (room, canEdit, user, prop) =>
+        var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
         {
             if (user == null) return room;
-            room.Users.Add(new(user, canEdit));
+            room.Users.Add(new Room.UserEntry(user, canEdit));
             room.Props.Add(prop);
             return room;
         }, splitOn: "IsOwner, Username, PropId");
@@ -93,7 +94,7 @@ public class RoomRepository(string connectionString) : ICrudRepository<Guid, Roo
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
                     WHERE r.RoomId = @roomId";
 
-        var rooms = await connection.QueryAsync<Room, bool, User, Room>(sql, (room, canEdit, user) =>
+        var rooms = await connection.QueryAsync<Room, bool, string, Room>(sql, (room, canEdit, user) =>
         {
             if (user == null) return room;
             room.Users.Add(new(user, canEdit));
@@ -132,7 +133,7 @@ public class RoomRepository(string connectionString) : ICrudRepository<Guid, Roo
                 }
             }
 
-            room.Users = [.. room.Users.DistinctBy(user => user.User.Username)];
+            room.Users = [.. room.Users.DistinctBy(user => user.User)];
             room.Props = [.. room.Props.DistinctBy(prop => prop.PropId)];
 
             return room;
