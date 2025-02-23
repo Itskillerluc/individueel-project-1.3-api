@@ -1,4 +1,5 @@
 using individueel_project_1._3_api.Authorization;
+using individueel_project_1._3_api.Dto;
 using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -16,23 +17,27 @@ var sqlConnectionStringFound= !string.IsNullOrWhiteSpace(connectionString);
 
 
 builder.Services.AddSingleton<ICrudRepository<Guid, Prop>, PropRepository>(_ => new PropRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
-builder.Services.AddSingleton<ICrudRepository<Guid, Room>, RoomRepository>(_ => new RoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<IRoomRepository, RoomRepository>(_ => new RoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 builder.Services.AddSingleton<ICrudRepository<string, User>, UserRepository>(_ => new UserRepository(connectionString?? throw new ArgumentException("No connection string found in secrets.json")));
 builder.Services.AddSingleton<ICrudRepository<(string Username, Guid RoomId), UserRoom>, UserRoomRepository>(_ => new UserRoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
-//Todo: policies and claims
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("UserPolicy", policy =>
-        policy.Requirements.Add(new SameUserRequirement()));
-});
 
-builder.Services.AddSingleton<IAuthorizationHandler,  DoesUserMatchAuthenticationHandler<User>>(_ => new DoesUserMatchAuthenticationHandler<User>(user => user.Username));
+builder.Services.AddAuthentication();
+
+var requireUserPolicy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+//todo look at this
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RoomPolicy", policy =>
+        policy.Requirements.Add(new SameUserRequirement()))
+    .SetDefaultPolicy(requireUserPolicy)
+    .SetFallbackPolicy(requireUserPolicy);
+
+builder.Services.AddSingleton<IAuthorizationHandler,  DoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new DoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user))));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
     {
@@ -49,10 +54,6 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
         options.ConnectionString = builder.Configuration.GetConnectionString("DapperIdentity");
     });
 
-builder.Services.AddMvc().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.MaxDepth = 64;
-});
     
 var app = builder.Build();
 

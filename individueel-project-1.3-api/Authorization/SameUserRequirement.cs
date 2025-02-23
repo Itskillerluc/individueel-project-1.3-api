@@ -2,10 +2,4 @@
 
 namespace individueel_project_1._3_api.Authorization;
 
-public class SameUserRequirement : IAuthorizationRequirement
-{
-    public SameUserRequirement()
-    {
-        Console.WriteLine("test");
-    }
-}
+public class SameUserRequirement : IAuthorizationRequirement;

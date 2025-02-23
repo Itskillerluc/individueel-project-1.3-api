@@ -1,0 +1,10 @@
+﻿namespace individueel_project_1._3_api.Dto;
+
+//Todo
+public class RoomCreateDto
+{
+    public required string Name { get; init; }
+    public required float Width { get; init; }
+    public required float Height { get; init; }
+    public required string TileId { get; init; }
+}
