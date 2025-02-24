@@ -1,6 +1,5 @@
 ﻿namespace individueel_project_1._3_api.Dto;
 
-//Todo
 public class RoomCreateDto
 {
     public required string Name { get; init; }

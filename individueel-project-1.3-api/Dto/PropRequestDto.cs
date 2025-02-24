@@ -2,14 +2,14 @@
 
 public class PropRequestDto
 {
-    public Guid PropId { get; set; }
-    public string PrefabId { get; set; }
-    public float PosX { get; set; }
-    public float PosY { get; set; }
-    public float Rotation { get; set; }
-    public float ScaleX { get; set; }
-    public float ScaleY { get; set; }
-    public int SortingLayer { get; set; }
-    public Guid RoomId { get; set; }
+    public required Guid PropId { get; init; }
+    public required string PrefabId { get; init; }
+    public required float PosX { get; init; }
+    public required float PosY { get; init; }
+    public required float Rotation { get; init; }
+    public required float ScaleX { get; init; }
+    public required float ScaleY { get; init; }
+    public required int SortingLayer { get; init; }
+    public required Guid RoomId { get; init; }
 
 }

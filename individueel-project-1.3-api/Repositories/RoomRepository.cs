@@ -79,7 +79,6 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    return MergeRooms(rooms).FirstOrDefault()?.ToDto();
     }
 
-    //todo add user
     public async Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto)
     {
 	    await using var connection = new SqlConnection(connectionString);

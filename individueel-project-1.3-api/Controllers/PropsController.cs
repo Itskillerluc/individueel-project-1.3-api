@@ -17,7 +17,7 @@ public class PropsController(
     : ControllerBase
 {
     [HttpGet(Name = "GetProp")]
-    public async Task<ActionResult<IEnumerable<Room>>> GetPropsAsync([FromQuery] Guid roomId, [FromQuery] Guid? propId)
+    public async Task<ActionResult<IEnumerable<PropRequestDto>>> GetPropsAsync([FromQuery] Guid roomId, [FromQuery] Guid? propId)
     {
         var room = await roomRepository.GetRoomByIdAsync(roomId);
         
@@ -42,6 +42,12 @@ public class PropsController(
     [HttpPost]
     public async Task<ActionResult> AddPropAsync([FromBody] PropCreateDto prop)
     {
+        var room = await roomRepository.GetRoomByIdAsync(prop.RoomId);
+        
+        var auth = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        
+        if (!auth.Succeeded) return Forbid();
+        
         var id = await propRepository.AddPropAsync(prop);
         return CreatedAtRoute("GetProp", new { propId = id }, prop);
     }
