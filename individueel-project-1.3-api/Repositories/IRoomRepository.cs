@@ -8,7 +8,7 @@ public interface IRoomRepository
     Task<IEnumerable<RoomRequestDto>> GetRoomsByUserAsync(string username);
     Task<RoomRequestDto?> GetRoomByIdAsync(Guid roomId);
 
-    Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto, string username);
+    Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto);
     
     Task UpdateRoomAsync(Guid roomId, RoomUpdateDto roomUpdateDto);
 

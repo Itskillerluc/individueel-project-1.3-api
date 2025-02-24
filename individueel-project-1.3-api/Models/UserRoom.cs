@@ -1,13 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using individueel_project_1._3_api.Dto;
 
 namespace individueel_project_1._3_api.Models;
 
-public class UserRoom(string username, Guid roomId, bool isOwner)
+public class UserRoom
 {
-    [Required]
-    public string Username { get; set; } = username;
-    [Required]
-    public Guid RoomId { get; set; } = roomId;
-    [Required]
-    public bool IsOwner { get; set; } = isOwner;
+    public required string Username { get; init; }
+    public required Guid RoomId { get; init; }
+    public required bool IsOwner { get; init; }
+
+    public UserRoomRequestDto ToDto()
+    {
+        return new UserRoomRequestDto
+        {
+            Username = Username,
+            RoomId = RoomId,
+            IsOwner = IsOwner
+        };
+    }
 }

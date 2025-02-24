@@ -16,10 +16,9 @@ var connectionString = builder.Configuration.GetConnectionString("DatabaseConnec
 var sqlConnectionStringFound= !string.IsNullOrWhiteSpace(connectionString);
 
 
-builder.Services.AddSingleton<ICrudRepository<Guid, Prop>, PropRepository>(_ => new PropRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<IPropRepository, PropRepository>(_ => new PropRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 builder.Services.AddSingleton<IRoomRepository, RoomRepository>(_ => new RoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
-builder.Services.AddSingleton<ICrudRepository<string, User>, UserRepository>(_ => new UserRepository(connectionString?? throw new ArgumentException("No connection string found in secrets.json")));
-builder.Services.AddSingleton<ICrudRepository<(string Username, Guid RoomId), UserRoom>, UserRoomRepository>(_ => new UserRoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
+builder.Services.AddSingleton<IUserRoomRepository, UserRoomRepository>(_ => new UserRoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,7 +29,7 @@ builder.Services.AddAuthentication();
 var requireUserPolicy = new AuthorizationPolicyBuilder()
     .RequireAuthenticatedUser()
     .Build();
-//todo look at this
+
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("RoomPolicy", policy =>
         policy.Requirements.Add(new SameUserRequirement()))

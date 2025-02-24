@@ -10,5 +10,5 @@ public class RoomRequestDto
     public required float Height { get; init; }
     public required string TileId { get; init; }
     public List<Room.UserEntry> Users { get; init; } = [];
-    public List<Prop> Props { get; init; } = [];
+    public List<PropRequestDto> Props { get; init; } = [];
 }

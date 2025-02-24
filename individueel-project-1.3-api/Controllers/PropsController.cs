@@ -2,61 +2,76 @@
 using individueel_project_1._3_api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using individueel_project_1._3_api.Dto;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace individueel_project_1._3_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class PropsController(
-    ILogger<PropsController> logger,
-    ICrudRepository<Guid, Prop> propRepository,
-    ICrudRepository<Guid, Room> roomRepository)
+    IPropRepository propRepository,
+    IRoomRepository roomRepository,
+    IAuthorizationService authorizationService)
     : ControllerBase
 {
-    private readonly ILogger<PropsController> _logger = logger;
-
     [HttpGet(Name = "GetProp")]
-    public async Task<ActionResult<IEnumerable<Room>>> GetPropsAsync([FromQuery] Guid? propId, [FromQuery] Guid? roomId)
+    public async Task<ActionResult<IEnumerable<Room>>> GetPropsAsync([FromQuery] Guid roomId, [FromQuery] Guid? propId)
     {
-        if (propId is null && roomId is null) return BadRequest("Bad Request: propId and roomId cannot both be left empty.");
-        Room? room = null;
-        if (roomId is not null)
+        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        
+        var auth = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        
+        if (!auth.Succeeded) return Forbid();
+        
+        if (propId is not null)
         {
-            room = await roomRepository.GetByIdAsync(roomId.Value);
+            var result = await propRepository.GetPropByIdAsync(propId.Value);
+            if (result is null) return NotFound();
+            return Ok(result);
         }
-        IEnumerable<Prop> props = roomId != null ? (await propRepository.GetAllAsync()).Where(prop =>
+        else
         {
-            var props = room?.Props.Any(p => p.PropId.Equals(propId));
-            return props != null && props.Value;
-        }) : await propRepository.GetAllAsync();
-        IEnumerable<Prop> result = propId != null ? props.Where(prop => prop.PropId.Equals(propId)) : props;
-        
-        if (propId != null && !result.Any()) return NotFound();
-        
-        return Ok(result);
+            var result = await roomRepository.GetRoomByIdAsync(roomId);
+            if (result is null) return NotFound();
+            return Ok(result.Props);
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddPropAsync([FromBody] Prop prop)
+    public async Task<ActionResult> AddPropAsync([FromBody] PropCreateDto prop)
     {
-        if (await propRepository.GetByIdAsync(prop.PropId) != null) return Conflict();
-        await propRepository.AddAsync(prop);
-        return CreatedAtRoute("GetProp", new { propId = prop.PropId }, prop);
+        var id = await propRepository.AddPropAsync(prop);
+        return CreatedAtRoute("GetProp", new { propId = id }, prop);
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdatePropAsync([FromQuery] Guid propId, [FromBody] Prop prop)
+    public async Task<ActionResult> UpdatePropAsync([FromQuery] Guid propId, [FromBody] PropUpdateDto prop)
     {
-        if (await propRepository.GetByIdAsync(propId) == null) return NotFound();
-        await propRepository.UpdateAsync(propId, prop);
+        var original = await propRepository.GetPropByIdAsync(propId);
+        if (original is null) return NotFound();
+        
+        var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
+        
+        if (!auth.Succeeded) return Forbid();
+        
+        await propRepository.UpdatePropAsync(propId, prop);
         return NoContent();
     }
 
     [HttpDelete]
     public async Task<ActionResult> DeletePropAsync([FromQuery] Guid propId)
     {
-        if (await propRepository.GetByIdAsync(propId) == null) return NotFound();
-        await roomRepository.DeleteAsync(propId);
+        var original = await propRepository.GetPropByIdAsync(propId);
+        if (original is null) return NotFound();
+        
+        var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
+        
+        if (!auth.Succeeded) return Forbid();
+        
+        if (await propRepository.GetPropByIdAsync(propId) is null) return NotFound();
+        await propRepository.DeletePropAsync(propId);
         return NoContent();
     }
 }

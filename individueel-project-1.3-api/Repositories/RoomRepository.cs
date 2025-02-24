@@ -80,7 +80,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
     }
 
     //todo add user
-    public async Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto, string username)
+    public async Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto)
     {
 	    await using var connection = new SqlConnection(connectionString);
 	    var id = Guid.NewGuid();
