@@ -32,7 +32,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
 					LEFT JOIN User_Room ur ON r.RoomId = ur.RoomId
 					LEFT JOIN auth.AspNetUsers u ON ur.Username = u.Username
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
-					WHERE u.Username == @userName";
+					WHERE u.Username = @userName";
 	    
 	    var rooms = await connection.QueryAsync<Room, bool, string, Room>(sql, (room, canEdit, user) =>
 	    {
