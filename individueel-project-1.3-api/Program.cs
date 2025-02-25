@@ -64,12 +64,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }   
+
+app.MapGroup("/account").MapIdentityApi<IdentityUser>().AllowAnonymous();
+
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapGroup("/account").MapIdentityApi<IdentityUser>();
-app.MapControllers().RequireAuthorization();
+app.MapControllers();//.RequireAuthorization();
 
 app.MapGet("/", () => $"The API is up and running. Connection string found: {(sqlConnectionStringFound ? "Yes! :D" : "No!")}");
 app.MapPost("/account/logout",
