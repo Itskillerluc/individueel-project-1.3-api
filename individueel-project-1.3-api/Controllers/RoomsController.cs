@@ -7,6 +7,8 @@ namespace individueel_project_1._3_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+
+//todo: Ask "Should there be a limit of 5 rooms built into the api"
 public class RoomsController(
     IRoomRepository roomRepository,
     IUserRoomRepository userRoomRepository,
@@ -16,30 +18,32 @@ public class RoomsController(
     [HttpGet(Name = "GetRoom")]
     public async Task<ActionResult<IEnumerable<RoomRequestDto>>> GetRoomsAsync([FromQuery] Guid? id)
     {
-        var user = User.Identity;
+        var user = User?.Identity;
 
         if (id == null)
         {
-            return Ok(await roomRepository.GetRoomsByUserAsync(user!.Name!));
+            return Ok(await roomRepository.GetRoomsByUserAsync(user?.Name!));
         }
 
         var result = await roomRepository.GetRoomByIdAsync(id.Value);
 
         var authorizationResult = await authorizationService
-            .AuthorizeAsync(User, result, "RoomPolicy");
+            .AuthorizeAsync(User!, result, "RoomPolicy");
 
         if (!authorizationResult.Succeeded)
         {
             return Forbid();
         }
 
+        if (result == null) return NotFound();
+        
         return Ok(result);
     }
 
     [HttpPost]
     public async Task<ActionResult> AddRoomAsync([FromBody] RoomCreateDto room)
     {
-        var userName = User.Identity?.Name!;
+        var userName = User?.Identity?.Name!;
 
         var id = await roomRepository.AddRoomAsync(room);
         await userRoomRepository.AddUserRoomAsync(new UserRoomCreateDto

@@ -24,6 +24,14 @@ public class UserRoomRepository(string connectionString) : IUserRoomRepository
             new { username })).Select(userRoom => userRoom.ToDto());
     }
 
+    public async Task<IEnumerable<UserRoomRequestDto>> GetUserRoomsByRoomAsync(Guid roomId)
+    {
+        await using var connection = new SqlConnection(connectionString);
+
+        return (await connection.QueryAsync<UserRoom>("SELECT Username, RoomId, IsOwner FROM dbo.[User_Room] WHERE RoomId = @roomId", 
+            new { roomId })).Select(userRoom => userRoom.ToDto());
+    }
+
     public async Task<(string username, Guid roomId)> AddUserRoomAsync(UserRoomCreateDto userRoomCreateDto)
     {
         await using var connection = new SqlConnection(connectionString);
