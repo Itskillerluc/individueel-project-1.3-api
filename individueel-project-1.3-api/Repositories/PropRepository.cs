@@ -21,7 +21,7 @@ public class PropRepository(string connectionString) : IPropRepository
     {
         await using var connection = new SqlConnection(connectionString);
         var id = Guid.NewGuid();
-        await connection.ExecuteAsync("INSERT INTO dbo.[Prop] VALUES (PropId, PrefabId, PosX, PosY, Rotation, ScaleX, ScaleY, SortingLayer, RoomId) = (@propId, @prefabId, @posX, @posY, @rotation, @scaleX, @scaleY, @sortingLayer, @roomId)",
+        await connection.ExecuteAsync("INSERT INTO dbo.[Prop] (PropId, PrefabId, PosX, PosY, Rotation, ScaleX, ScaleY, SortingLayer, RoomId) VALUES (@propId, @prefabId, @posX, @posY, @rotation, @scaleX, @scaleY, @sortingLayer, @roomId)",
             new { propId = id , prefabId = prop, posX = prop.PosX, posY = prop.PosY, rotation = prop.Rotation, scaleX = prop.ScaleX, scaleY = prop.ScaleY, sortingLayer = prop.SortingLayer, roomId = prop.RoomId });
 
         return id;

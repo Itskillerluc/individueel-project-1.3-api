@@ -34,7 +34,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
 					WHERE u.Username = @userName";
 	    
-	    var rooms = await connection.QueryAsync<Room, bool, string, Room>(sql, (room, canEdit, user) =>
+	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
 		    return room;
@@ -69,9 +69,8 @@ public class RoomRepository(string connectionString) : IRoomRepository
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
                     WHERE r.RoomId = @roomId";
 
-	    var rooms = await connection.QueryAsync<Room, bool, string, Room>(sql, (room, canEdit, user) =>
+	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
-		    if (user == null) return room;
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
 		    return room;
 	    }, new { roomId }, splitOn: "IsOwner, Username, PropId");
@@ -83,7 +82,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
     {
 	    await using var connection = new SqlConnection(connectionString);
 	    var id = Guid.NewGuid();
-	    await connection.ExecuteAsync("INSERT INTO dbo.[Room] VALUES (RoomId, Name, Width, Height, TileId) = (@roomId, @name, @width, @height, @tileId)",
+	    await connection.ExecuteAsync("INSERT INTO dbo.[Room] (RoomId, Name, Width, Height, TileId) VALUES (@roomId, @name, @width, @height, @tileId)",
 		    new { roomId = id, name = roomCreateDto.Name, width = roomCreateDto.Width, height = roomCreateDto.Height, tileId = roomCreateDto.TileId });
 
 	    return id;
