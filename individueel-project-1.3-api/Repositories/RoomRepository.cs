@@ -65,7 +65,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
                     p.RoomId
                     FROM Room r
 					LEFT JOIN User_Room ur ON r.RoomId = ur.RoomId
-					LEFT JOIN [User] u ON ur.Username = u.Username
+					LEFT JOIN auth.AspNetUsers u ON ur.Username = u.Username
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
                     WHERE r.RoomId = @roomId";
 
@@ -100,6 +100,8 @@ public class RoomRepository(string connectionString) : IRoomRepository
     {
 	    await using var connection = new SqlConnection(connectionString);
 
+	    //todo delete all userRoom entries first so that there are no issues.
+	    
 	    await connection.ExecuteAsync("DELETE FROM dbo.[Room] WHERE RoomId = @roomId", 
 		    new { roomId });
     }
