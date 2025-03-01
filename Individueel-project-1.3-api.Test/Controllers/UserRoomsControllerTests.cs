@@ -10,6 +10,7 @@ namespace Individueel_project_1._3_api.Test.Controllers;
 
 public class UserRoomsControllerTests
 {
+    //todo change names
     private static readonly UserRoomRequestDto EmptyUserRoomRequestDto = new()
     {
         Username = "",
@@ -118,7 +119,7 @@ public class UserRoomsControllerTests
         });
 
         //Assert
-        Assert.IsType<CreatedAtRouteResult>(result);
+        Assert.IsType<OkResult>(result);
     }
     
     [Fact]
