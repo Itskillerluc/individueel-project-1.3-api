@@ -99,8 +99,6 @@ public class RoomRepository(string connectionString) : IRoomRepository
     public async Task DeleteRoomAsync(Guid roomId)
     {
 	    await using var connection = new SqlConnection(connectionString);
-
-	    //todo delete all userRoom entries first so that there are no issues.
 	    
 	    await connection.ExecuteAsync("DELETE FROM dbo.[Room] WHERE RoomId = @roomId", 
 		    new { roomId });

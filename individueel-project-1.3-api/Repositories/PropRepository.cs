@@ -42,4 +42,12 @@ public class PropRepository(string connectionString) : IPropRepository
         await connection.ExecuteAsync("DELETE FROM dbo.[Prop] WHERE PropId = @propId", 
             new { propId });
     }
+
+    public async Task DeletePropsByRoomAsync(Guid roomId)
+    {
+        await using var connection = new SqlConnection(connectionString);
+        
+        await connection.ExecuteAsync("DELETE FROM dbo.[Prop] WHERE RoomId = @roomId", 
+            new { roomId });
+    }
 }

@@ -8,4 +8,5 @@ public interface IPropRepository
     Task<Guid> AddPropAsync(PropCreateDto prop);
     Task UpdatePropAsync(Guid propId, PropUpdateDto prop);
     Task DeletePropAsync(Guid propId);
+    Task DeletePropsByRoomAsync(Guid roomId);
 }

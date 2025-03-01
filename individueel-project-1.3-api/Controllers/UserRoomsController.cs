@@ -4,6 +4,7 @@ using individueel_project_1._3_api.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace individueel_project_1._3_api.Controllers;
 
@@ -47,17 +48,26 @@ public class UserRoomsController(
     [HttpPost]
     public async Task<ActionResult> AddUserRoom([FromBody] UserRoomCreateDto userRoom)
     {
-        if (await userRoomRepository.GetUserRoomAsyncById(userRoom.Username, userRoom.RoomId) != null) return Conflict();
+        try
+        {
+            if (await userRoomRepository.GetUserRoomAsyncById(userRoom.Username, userRoom.RoomId) != null) return Conflict();
         
-        var room = await roomRepository.GetRoomByIdAsync(userRoom.RoomId);
+            var room = await roomRepository.GetRoomByIdAsync(userRoom.RoomId);
         
-        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
+            var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
         
-        if (!authorizationResult.Succeeded) return Forbid();
+            if (!authorizationResult.Succeeded) return Forbid();
         
-        await userRoomRepository.AddUserRoomAsync(userRoom);
+            await userRoomRepository.AddUserRoomAsync(userRoom);
+
+            //return okay so you cannot see if the user exists or not
+            return Ok();
+        } catch (SqlException exception)
+        {
+            if (exception.Number == 547) return Ok();
+            throw;
+        }
         
-        return CreatedAtRoute("GetUsers", new { username = userRoom.Username, roomId = userRoom.RoomId }, userRoom);
     }
     
     [HttpPut]

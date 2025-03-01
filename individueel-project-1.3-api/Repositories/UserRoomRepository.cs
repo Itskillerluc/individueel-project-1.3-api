@@ -35,7 +35,7 @@ public class UserRoomRepository(string connectionString) : IUserRoomRepository
     public async Task<(string username, Guid roomId)> AddUserRoomAsync(UserRoomCreateDto userRoomCreateDto)
     {
         await using var connection = new SqlConnection(connectionString);
-
+        
         await connection.ExecuteAsync("INSERT INTO dbo.[User_Room] (Username, RoomId, IsOwner) VALUES (@username, @roomId, @isOwner)", 
             new { username = userRoomCreateDto.Username, roomId = userRoomCreateDto.RoomId, isOwner = userRoomCreateDto.IsOwner });
         
@@ -48,6 +48,14 @@ public class UserRoomRepository(string connectionString) : IUserRoomRepository
 
         await connection.ExecuteAsync("DELETE FROM dbo.[User_Room] WHERE Username = @username AND RoomId = @roomId",
             new { username, roomId });
+    }
+
+    public async Task DeleteUserRoomsByRoomAsync(Guid roomId)
+    {
+        await using var connection = new SqlConnection(connectionString);
+
+        await connection.ExecuteAsync("DELETE FROM dbo.[User_Room] WHERE RoomId = @roomId",
+            new { roomId });
     }
 
     public async Task UpdateUserRoomAsync(string username, Guid roomId, UserRoomUpdateDto userRoomUpdateDto)

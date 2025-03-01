@@ -9,5 +9,6 @@ public interface IUserRoomRepository
     Task<IEnumerable<UserRoomRequestDto>> GetUserRoomsByRoomAsync(Guid roomId);
     Task<(string username, Guid roomId)> AddUserRoomAsync(UserRoomCreateDto userRoomCreateDto);
     Task DeleteUserRoomAsync(string username, Guid roomId);
+    Task DeleteUserRoomsByRoomAsync(Guid roomId);
     Task UpdateUserRoomAsync(string username, Guid roomId, UserRoomUpdateDto userRoomUpdateDto);
 }

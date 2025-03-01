@@ -11,6 +11,7 @@ namespace individueel_project_1._3_api.Controllers;
 //todo: Ask "Should there be a limit of 5 rooms built into the api"
 public class RoomsController(
     IRoomRepository roomRepository,
+    IPropRepository propRepository,
     IUserRoomRepository userRoomRepository,
     IAuthorizationService authorizationService)
     : ControllerBase
@@ -76,7 +77,9 @@ public class RoomsController(
             .AuthorizeAsync(User, original, "RoomPolicy");
 
         if (!authorizationResult.Succeeded) return Forbid();
-
+        
+        await userRoomRepository.DeleteUserRoomsByRoomAsync(roomId);
+        
         await roomRepository.DeleteRoomAsync(roomId);
         return NoContent();
     }
