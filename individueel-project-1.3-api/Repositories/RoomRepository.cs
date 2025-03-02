@@ -33,16 +33,18 @@ public class RoomRepository(string connectionString) : IRoomRepository
 					LEFT JOIN auth.AspNetUsers u ON ur.Username = u.Username
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
 					WHERE u.Username = @userName";
-	    
+	    //todo add rooms
 	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
+		    room.Props.Add(prop);
 		    return room;
 	    }, new { userName = username }, splitOn: "IsOwner, Username, PropId");
 
 	    return MergeRooms(rooms).Select(room => room.ToDto());
     }
-
+	
+	//todo add rooms
     public async Task<RoomRequestDto?> GetRoomByIdAsync(Guid roomId)
     {
 	    await using var connection = new SqlConnection(connectionString);
@@ -72,6 +74,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
+		    room.Props.Add(prop);
 		    return room;
 	    }, new { roomId }, splitOn: "IsOwner, Username, PropId");
 
