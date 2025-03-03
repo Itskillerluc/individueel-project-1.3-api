@@ -31,16 +31,19 @@ var requireUserPolicy = new AuthorizationPolicyBuilder()
     .Build();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("RoomPolicy", policy =>
+    .AddPolicy("StrictRoomPolicy", policy =>
+        policy.Requirements.Add(new SameUserAndOwnerRequirement()))
+    .AddPolicy("WeakRoomPolicy", policy =>
         policy.Requirements.Add(new SameUserRequirement()))
     .SetDefaultPolicy(requireUserPolicy)
     .SetFallbackPolicy(requireUserPolicy);
 
-builder.Services.AddSingleton<IAuthorizationHandler,  DoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new DoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user))));
+builder.Services.AddSingleton<IAuthorizationHandler,  StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user) && usr.IsOwner)));
+builder.Services.AddSingleton<IAuthorizationHandler, WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user))));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
-    {
-        //options.User.RequireUniqueEmail = true;
+    { 
+        options.User.RequireUniqueEmail = true;
         options.Password.RequiredLength = 10;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;

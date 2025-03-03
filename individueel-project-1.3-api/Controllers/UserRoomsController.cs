@@ -35,7 +35,7 @@ public class UserRoomsController(
         
         var room = await roomRepository.GetRoomByIdAsync(roomId.Value);
 
-        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
+        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
 
         if (!authorizationResult.Succeeded) return Forbid();
         
@@ -54,7 +54,7 @@ public class UserRoomsController(
         
             var room = await roomRepository.GetRoomByIdAsync(userRoom.RoomId);
         
-            var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
+            var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
             if (!authorizationResult.Succeeded) return Forbid();
         
@@ -77,7 +77,7 @@ public class UserRoomsController(
         
         var room = await roomRepository.GetRoomByIdAsync(roomId);
         
-        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
+        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
         if (!authorizationResult.Succeeded) return Forbid();
         
@@ -92,7 +92,7 @@ public class UserRoomsController(
         
         var room = await roomRepository.GetRoomByIdAsync(roomId);
         
-        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "RoomPolicy");
+        var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "WeakRoomPolicy");
         
         if (!authorizationResult.Succeeded) return Forbid();
         

@@ -21,7 +21,7 @@ public class PropsController(
     {
         var room = await roomRepository.GetRoomByIdAsync(roomId);
         
-        var auth = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        var auth = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
         
         if (!auth.Succeeded) return Forbid();
         
@@ -44,7 +44,7 @@ public class PropsController(
     {
         var room = await roomRepository.GetRoomByIdAsync(prop.RoomId);
         
-        var auth = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        var auth = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
         
         if (!auth.Succeeded) return Forbid();
         
@@ -58,7 +58,7 @@ public class PropsController(
         var original = await propRepository.GetPropByIdAsync(propId);
         if (original is null) return NotFound();
         
-        var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
+        var auth = await authorizationService.AuthorizeAsync(User, original, "StrictRoomPolicy");
         
         if (!auth.Succeeded) return Forbid();
         
@@ -69,15 +69,12 @@ public class PropsController(
     [HttpDelete]
     public async Task<ActionResult> DeletePropAsync([FromQuery] Guid? propId, [FromQuery] Guid roomId)
     {
-        
-        
-        
         if (propId != null)
         {
             var original = await propRepository.GetPropByIdAsync(propId.Value);
             if (original is null) return NotFound();
         
-            var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
+            var auth = await authorizationService.AuthorizeAsync(User, original, "StrictRoomPolicy");
         
             if (!auth.Succeeded) return Forbid();
             
@@ -89,7 +86,7 @@ public class PropsController(
         var room = await roomRepository.GetRoomByIdAsync(roomId);
         if (room is null) return NotFound();
         
-        var authorize = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        var authorize = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
         
         if (!authorize.Succeeded) return Forbid();
         
