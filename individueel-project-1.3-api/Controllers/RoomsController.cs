@@ -79,7 +79,7 @@ public class RoomsController(
         if (!authorizationResult.Succeeded) return Forbid();
         
         await userRoomRepository.DeleteUserRoomsByRoomAsync(roomId);
-        
+        await propRepository.DeletePropsByRoomAsync(roomId);
         await roomRepository.DeleteRoomAsync(roomId);
         return NoContent();
     }

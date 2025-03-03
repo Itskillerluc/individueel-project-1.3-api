@@ -67,17 +67,33 @@ public class PropsController(
     }
 
     [HttpDelete]
-    public async Task<ActionResult> DeletePropAsync([FromQuery] Guid propId)
+    public async Task<ActionResult> DeletePropAsync([FromQuery] Guid? propId, [FromQuery] Guid roomId)
     {
-        var original = await propRepository.GetPropByIdAsync(propId);
-        if (original is null) return NotFound();
         
-        var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
         
-        if (!auth.Succeeded) return Forbid();
         
-        if (await propRepository.GetPropByIdAsync(propId) is null) return NotFound();
-        await propRepository.DeletePropAsync(propId);
+        if (propId != null)
+        {
+            var original = await propRepository.GetPropByIdAsync(propId.Value);
+            if (original is null) return NotFound();
+        
+            var auth = await authorizationService.AuthorizeAsync(User, original, "RoomPolicy");
+        
+            if (!auth.Succeeded) return Forbid();
+            
+            if (await propRepository.GetPropByIdAsync(propId.Value) is null) return NotFound();
+            await propRepository.DeletePropAsync(propId.Value);
+            return NoContent();
+        }
+
+        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        if (room is null) return NotFound();
+        
+        var authorize = await authorizationService.AuthorizeAsync(User, room, "RoomPolicy");
+        
+        if (!authorize.Succeeded) return Forbid();
+        
+        await propRepository.DeletePropsByRoomAsync(roomId);
         return NoContent();
     }
 }

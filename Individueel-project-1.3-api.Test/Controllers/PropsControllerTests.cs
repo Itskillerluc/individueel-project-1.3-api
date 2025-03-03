@@ -303,7 +303,7 @@ public class PropsControllerTests
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
         //Act
-        var result = await controller.DeletePropAsync(Guid.Empty);
+        var result = await controller.DeletePropAsync(Guid.Empty, Guid.Empty);
 
         //Assert
         Assert.IsType<NotFoundResult>(result);
@@ -322,7 +322,7 @@ public class PropsControllerTests
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
         //Act
-        var result = await controller.DeletePropAsync(Guid.Empty);
+        var result = await controller.DeletePropAsync(Guid.Empty, Guid.Empty);
 
         //Assert
         Assert.IsType<NotFoundResult>(result);
@@ -342,7 +342,7 @@ public class PropsControllerTests
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
         //Act
-        var result = await controller.DeletePropAsync(Guid.Empty);
+        var result = await controller.DeletePropAsync(Guid.Empty, Guid.Empty);
 
         //Assert
         Assert.IsType<NoContentResult>(result);

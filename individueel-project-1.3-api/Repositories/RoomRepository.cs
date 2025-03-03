@@ -37,7 +37,10 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
-		    room.Props.Add(prop);
+		    if (!prop.PropId.Equals(Guid.Empty))
+		    {
+			    room.Props.Add(prop);
+		    }
 		    return room;
 	    }, new { userName = username }, splitOn: "IsOwner, Username, PropId");
 
@@ -74,7 +77,10 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
-		    room.Props.Add(prop);
+		    if (!prop.PropId.Equals(Guid.Empty))
+		    {
+			    room.Props.Add(prop);
+		    }
 		    return room;
 	    }, new { roomId }, splitOn: "IsOwner, Username, PropId");
 
