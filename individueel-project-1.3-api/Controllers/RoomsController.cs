@@ -37,7 +37,7 @@ public class RoomsController(
         }
 
         if (result == null) return NotFound();
-        
+
         return Ok(result);
     }
 
@@ -45,6 +45,14 @@ public class RoomsController(
     public async Task<ActionResult> AddRoomAsync([FromBody] RoomCreateDto room)
     {
         var userName = User?.Identity?.Name!;
+
+        if ((await roomRepository.GetRoomsByUserAsync(userName)).Count(r =>
+                r.Users.Any(u => u.User.Equals(userName) && u.IsOwner)) >= 5)
+        {
+            return BadRequest("A user cannot have more than 5 rooms");
+        }
+
+        if (await roomRepository.GetRoomByNameAndUserAsync(room.Name, userName) != null) return Conflict();
 
         var id = await roomRepository.AddRoomAsync(room);
         await userRoomRepository.AddUserRoomAsync(new UserRoomCreateDto
@@ -77,7 +85,7 @@ public class RoomsController(
             .AuthorizeAsync(User, original, "StrictRoomPolicy");
 
         if (!authorizationResult.Succeeded) return Forbid();
-        
+
         await userRoomRepository.DeleteUserRoomsByRoomAsync(roomId);
         await propRepository.DeletePropsByRoomAsync(roomId);
         await roomRepository.DeleteRoomAsync(roomId);

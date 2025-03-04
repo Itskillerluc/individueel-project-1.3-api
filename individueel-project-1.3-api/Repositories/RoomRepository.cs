@@ -87,6 +87,45 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    return MergeRooms(rooms).FirstOrDefault()?.ToDto();
     }
 
+    public async Task<RoomRequestDto?> GetRoomByNameAndUserAsync(string roomName, string username)
+    {
+	    await using var connection = new SqlConnection(connectionString);
+	    const string sql = @"SELECT
+					r.RoomId,
+					r.[Name],
+					r.Width,
+                    r.Height,
+                    r.TileId,
+					ISNULL(ur.IsOwner, 0) AS 'IsOwner',
+					ISNULL(u.Username, '') AS 'Username',
+					ISNULL(p.PropId, '00000000-0000-0000-0000-000000000000') AS 'PropId',
+					ISNULL(p.PrefabId, '') AS 'PrefabId',
+					ISNULL(p.PosX, 0) AS 'PosX',
+					ISNULL(p.PosY, 0) AS 'PosY',
+					ISNULL(p.Rotation, 0) AS 'Rotation',
+					ISNULL(p.ScaleX, 0) AS 'ScaleX',
+					ISNULL(p.ScaleY, 0) AS 'ScaleY',
+					ISNULL(p.SortingLayer, 0) AS 'SortingLayer',
+                    p.RoomId
+                    FROM Room r
+					LEFT JOIN User_Room ur ON r.RoomId = ur.RoomId
+					LEFT JOIN auth.AspNetUsers u ON ur.Username = u.Username
+					LEFT JOIN Prop p ON r.RoomId = p.RoomId
+                    WHERE r.[Name] = @name AND u.username = @username";
+
+	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
+	    {
+		    room.Users.Add(new Room.UserEntry(user, canEdit));
+		    if (!prop.PropId.Equals(Guid.Empty))
+		    {
+			    room.Props.Add(prop);
+		    }
+		    return room;
+	    }, new { name = roomName, username }, splitOn: "IsOwner, Username, PropId");
+
+	    return MergeRooms(rooms).FirstOrDefault()?.ToDto();
+    }
+
     public async Task<Guid> AddRoomAsync(RoomCreateDto roomCreateDto)
     {
 	    await using var connection = new SqlConnection(connectionString);
