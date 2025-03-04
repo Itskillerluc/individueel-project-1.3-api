@@ -28,7 +28,7 @@ public class RoomsControllerTests
         var mockAuth = new Mock<IAuthorizationService>();
         var mockPropRepository = new Mock<IPropRepository>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -49,7 +49,7 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -70,8 +70,8 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -168,8 +168,8 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null!)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -196,8 +196,8 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null!)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -245,8 +245,8 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null!)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
 
@@ -267,8 +267,8 @@ public class RoomsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
 
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null!)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new RoomsController(mockRoomRepository.Object, mockPropRepository.Object, mockUserRoomRepository.Object, mockAuth.Object);
  

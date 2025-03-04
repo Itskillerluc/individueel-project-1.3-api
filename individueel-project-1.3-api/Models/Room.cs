@@ -25,7 +25,7 @@ public class Room
             Width = Width,
             Height = Height,
             TileId = TileId,
-            Users = Users,
+            IsOwner = Users.SingleOrDefault()?.IsOwner,
             Props = Props.Select(prop => prop.ToDto()).ToList()
         };
     }

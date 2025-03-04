@@ -38,8 +38,8 @@ builder.Services.AddAuthorizationBuilder()
     .SetDefaultPolicy(requireUserPolicy)
     .SetFallbackPolicy(requireUserPolicy);
 
-builder.Services.AddSingleton<IAuthorizationHandler,  StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user) && usr.IsOwner)));
-builder.Services.AddSingleton<IAuthorizationHandler, WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, user) => room.Users.Any(usr => usr.User.Equals(user))));
+builder.Services.AddSingleton<IAuthorizationHandler,  StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new StrictDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, _) => room.IsOwner ?? false));
+builder.Services.AddSingleton<IAuthorizationHandler, WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>>(_ => new WeakDoesUserMatchAuthenticationHandler<RoomRequestDto>((room, _) => room.IsOwner != null));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
     { 

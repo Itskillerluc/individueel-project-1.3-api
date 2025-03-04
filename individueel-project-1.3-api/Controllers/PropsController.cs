@@ -19,9 +19,11 @@ public class PropsController(
     [HttpGet(Name = "GetProp")]
     public async Task<ActionResult<IEnumerable<PropRequestDto>>> GetPropsAsync([FromQuery] Guid roomId, [FromQuery] Guid? propId)
     {
-        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        var name = User?.Identity?.Name!;
         
-        var auth = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
+        var room = await roomRepository.GetRoomByIdAsync(roomId, name);
+        
+        var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
         if (!auth.Succeeded) return Forbid();
         
@@ -33,7 +35,7 @@ public class PropsController(
         }
         else
         {
-            var result = await roomRepository.GetRoomByIdAsync(roomId);
+            var result = await roomRepository.GetRoomByIdAsync(roomId, name);
             if (result is null) return NotFound();
             return Ok(result.Props);
         }
@@ -42,9 +44,9 @@ public class PropsController(
     [HttpPost]
     public async Task<ActionResult> AddPropAsync([FromBody] PropCreateDto prop)
     {
-        var room = await roomRepository.GetRoomByIdAsync(prop.RoomId);
+        var room = await roomRepository.GetRoomByIdAsync(prop.RoomId, User?.Identity?.Name!);
         
-        var auth = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
+        var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
         if (!auth.Succeeded) return Forbid();
         
@@ -83,10 +85,10 @@ public class PropsController(
             return NoContent();
         }
 
-        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
         if (room is null) return NotFound();
         
-        var authorize = await authorizationService.AuthorizeAsync(User, room, "StrictRoomPolicy");
+        var authorize = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
         if (!authorize.Succeeded) return Forbid();
         

@@ -48,7 +48,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
     }
 	
 	//todo add rooms
-    public async Task<RoomRequestDto?> GetRoomByIdAsync(Guid roomId)
+    public async Task<RoomRequestDto?> GetRoomByIdAsync(Guid roomId, string username)
     {
 	    await using var connection = new SqlConnection(connectionString);
 	    const string sql = @"SELECT

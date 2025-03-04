@@ -39,7 +39,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -58,7 +58,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -78,7 +78,7 @@ public class PropsControllerTests
         var mockAuth = new Mock<IAuthorizationService>();
 
         mockPropRepository.Setup(x => x.GetPropByIdAsync(Guid.Empty)).ReturnsAsync(EmptyPropRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -97,7 +97,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -116,7 +116,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -135,8 +135,8 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty)).ReturnsAsync(EmptyRoomRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "RoomPolicy"))
+        mockRoomRepository.Setup(x => x.GetRoomByIdAsync(Guid.Empty, null!)).ReturnsAsync(EmptyRoomRequestDto);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyRoomRequestDto, "StrictRoomPolicy"))
             .ReturnsAsync(AuthorizationResult.Success);
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -155,7 +155,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Failed);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -184,7 +184,7 @@ public class PropsControllerTests
         var mockPropRepository = new Mock<IPropRepository>();
         var mockAuth = new Mock<IAuthorizationService>();
 
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -270,7 +270,7 @@ public class PropsControllerTests
         var mockAuth = new Mock<IAuthorizationService>();
 
         mockPropRepository.Setup(x => x.GetPropByIdAsync(Guid.Empty)).ReturnsAsync(EmptyPropRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyPropRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyPropRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 
@@ -337,7 +337,7 @@ public class PropsControllerTests
         var mockAuth = new Mock<IAuthorizationService>();
 
         mockPropRepository.Setup(x => x.GetPropByIdAsync(Guid.Empty)).ReturnsAsync(EmptyPropRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyPropRequestDto, "RoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyPropRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 

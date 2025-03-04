@@ -33,7 +33,7 @@ public class UserRoomsController(
             return Ok(await userRoomRepository.GetUserRoomsByRoomAsync(roomId.Value));
         }
         
-        var room = await roomRepository.GetRoomByIdAsync(roomId.Value);
+        var room = await roomRepository.GetRoomByIdAsync(roomId.Value, user);
 
         var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
 
@@ -52,7 +52,7 @@ public class UserRoomsController(
         {
             if (await userRoomRepository.GetUserRoomAsyncById(userRoom.Username, userRoom.RoomId) != null) return Conflict();
         
-            var room = await roomRepository.GetRoomByIdAsync(userRoom.RoomId);
+            var room = await roomRepository.GetRoomByIdAsync(userRoom.RoomId, User?.Identity?.Name!);
         
             var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
@@ -75,7 +75,7 @@ public class UserRoomsController(
     {
         if (await userRoomRepository.GetUserRoomAsyncById(username, roomId) is null) return NotFound();
         
-        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
         
         var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
@@ -90,7 +90,7 @@ public class UserRoomsController(
     {
         if (await userRoomRepository.GetUserRoomAsyncById(username, roomId) is null) return NotFound();
         
-        var room = await roomRepository.GetRoomByIdAsync(roomId);
+        var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
         
         var authorizationResult = await authorizationService.AuthorizeAsync(User!, room, "WeakRoomPolicy");
         

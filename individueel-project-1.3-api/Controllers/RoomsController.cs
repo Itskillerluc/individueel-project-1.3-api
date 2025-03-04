@@ -26,7 +26,7 @@ public class RoomsController(
             return Ok(await roomRepository.GetRoomsByUserAsync(user?.Name!));
         }
 
-        var result = await roomRepository.GetRoomByIdAsync(id.Value);
+        var result = await roomRepository.GetRoomByIdAsync(id.Value, user?.Name!);
 
         var authorizationResult = await authorizationService
             .AuthorizeAsync(User!, result, "StrictRoomPolicy");
@@ -47,7 +47,7 @@ public class RoomsController(
         var userName = User?.Identity?.Name!;
 
         if ((await roomRepository.GetRoomsByUserAsync(userName)).Count(r =>
-                r.Users.Any(u => u.User.Equals(userName) && u.IsOwner)) >= 5)
+                r.IsOwner ?? false) >= 5)
         {
             return BadRequest("A user cannot have more than 5 rooms");
         }
@@ -64,11 +64,11 @@ public class RoomsController(
     [HttpPut]
     public async Task<ActionResult> UpdateRoomAsync([FromQuery] Guid roomId, [FromBody] RoomUpdateDto room)
     {
-        var original = await roomRepository.GetRoomByIdAsync(roomId);
+        var original = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
         if (original == null) return NotFound();
 
         var authorizationResult = await authorizationService
-            .AuthorizeAsync(User, original, "StrictRoomPolicy");
+            .AuthorizeAsync(User!, original, "StrictRoomPolicy");
 
         if (!authorizationResult.Succeeded) return Forbid();
         await roomRepository.UpdateRoomAsync(roomId, room);
@@ -78,11 +78,11 @@ public class RoomsController(
     [HttpDelete]
     public async Task<ActionResult> DeleteRoomAsync([FromQuery] Guid roomId)
     {
-        var original = await roomRepository.GetRoomByIdAsync(roomId);
+        var original = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
         if (original == null) return NotFound();
 
         var authorizationResult = await authorizationService
-            .AuthorizeAsync(User, original, "StrictRoomPolicy");
+            .AuthorizeAsync(User!, original, "StrictRoomPolicy");
 
         if (!authorizationResult.Succeeded) return Forbid();
 
