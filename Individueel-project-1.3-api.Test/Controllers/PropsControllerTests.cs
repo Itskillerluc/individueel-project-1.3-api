@@ -337,7 +337,7 @@ public class PropsControllerTests
         var mockAuth = new Mock<IAuthorizationService>();
 
         mockPropRepository.Setup(x => x.GetPropByIdAsync(Guid.Empty)).ReturnsAsync(EmptyPropRequestDto);
-        mockAuth.Setup(x => x.AuthorizeAsync(null!, EmptyPropRequestDto, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
+        mockAuth.Setup(x => x.AuthorizeAsync(null!, null!, "StrictRoomPolicy")).ReturnsAsync(AuthorizationResult.Success);
 
         var controller = new PropsController(mockPropRepository.Object, mockRoomRepository.Object, mockAuth.Object);
 

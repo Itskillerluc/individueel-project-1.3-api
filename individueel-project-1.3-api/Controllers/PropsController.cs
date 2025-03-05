@@ -75,24 +75,28 @@ public class PropsController(
         {
             var original = await propRepository.GetPropByIdAsync(propId.Value);
             if (original is null) return NotFound();
-        
-            var auth = await authorizationService.AuthorizeAsync(User, original, "StrictRoomPolicy");
+
+            var room = await roomRepository.GetRoomByPropAsync(propId.Value, User?.Identity?.Name!);
+            
+            var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
         
             if (!auth.Succeeded) return Forbid();
             
             if (await propRepository.GetPropByIdAsync(propId.Value) is null) return NotFound();
             await propRepository.DeletePropAsync(propId.Value);
-            return NoContent();
+        }
+        else
+        {
+            var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
+            if (room is null) return NotFound();
+        
+            var authorize = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
+        
+            if (!authorize.Succeeded) return Forbid();
+        
+            await propRepository.DeletePropsByRoomAsync(roomId);
         }
 
-        var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
-        if (room is null) return NotFound();
-        
-        var authorize = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
-        
-        if (!authorize.Succeeded) return Forbid();
-        
-        await propRepository.DeletePropsByRoomAsync(roomId);
         return NoContent();
     }
 }

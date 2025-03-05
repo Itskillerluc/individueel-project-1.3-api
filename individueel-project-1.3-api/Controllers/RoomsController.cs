@@ -29,7 +29,7 @@ public class RoomsController(
         var result = await roomRepository.GetRoomByIdAsync(id.Value, user?.Name!);
 
         var authorizationResult = await authorizationService
-            .AuthorizeAsync(User!, result, "StrictRoomPolicy");
+            .AuthorizeAsync(User!, result, "WeakRoomPolicy");
 
         if (!authorizationResult.Succeeded)
         {
