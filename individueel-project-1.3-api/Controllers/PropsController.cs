@@ -1,9 +1,6 @@
-﻿using individueel_project_1._3_api.Models;
-using individueel_project_1._3_api.Repositories;
+﻿using individueel_project_1._3_api.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using individueel_project_1._3_api.Dto;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
 namespace individueel_project_1._3_api.Controllers;
@@ -17,16 +14,17 @@ public class PropsController(
     : ControllerBase
 {
     [HttpGet(Name = "GetProp")]
-    public async Task<ActionResult<IEnumerable<PropRequestDto>>> GetPropsAsync([FromQuery] Guid roomId, [FromQuery] Guid? propId)
+    public async Task<ActionResult<IEnumerable<PropRequestDto>>> GetPropsAsync([FromQuery] Guid roomId,
+        [FromQuery] Guid? propId)
     {
         var name = User?.Identity?.Name!;
-        
+
         var room = await roomRepository.GetRoomByIdAsync(roomId, name);
-        
+
         var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
-        
+
         if (!auth.Succeeded) return Forbid();
-        
+
         if (propId is not null)
         {
             var result = await propRepository.GetPropByIdAsync(propId.Value);
@@ -45,11 +43,11 @@ public class PropsController(
     public async Task<ActionResult> AddPropAsync([FromBody] PropCreateDto prop)
     {
         var room = await roomRepository.GetRoomByIdAsync(prop.RoomId, User?.Identity?.Name!);
-        
+
         var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
-        
+
         if (!auth.Succeeded) return Forbid();
-        
+
         var id = await propRepository.AddPropAsync(prop);
         return CreatedAtRoute("GetProp", new { propId = id }, prop);
     }
@@ -59,11 +57,11 @@ public class PropsController(
     {
         var original = await propRepository.GetPropByIdAsync(propId);
         if (original is null) return NotFound();
-        
+
         var auth = await authorizationService.AuthorizeAsync(User, original, "StrictRoomPolicy");
-        
+
         if (!auth.Succeeded) return Forbid();
-        
+
         await propRepository.UpdatePropAsync(propId, prop);
         return NoContent();
     }
@@ -77,11 +75,11 @@ public class PropsController(
             if (original is null) return NotFound();
 
             var room = await roomRepository.GetRoomByPropAsync(propId.Value, User?.Identity?.Name!);
-            
+
             var auth = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
-        
+
             if (!auth.Succeeded) return Forbid();
-            
+
             if (await propRepository.GetPropByIdAsync(propId.Value) is null) return NotFound();
             await propRepository.DeletePropAsync(propId.Value);
         }
@@ -89,11 +87,11 @@ public class PropsController(
         {
             var room = await roomRepository.GetRoomByIdAsync(roomId, User?.Identity?.Name!);
             if (room is null) return NotFound();
-        
+
             var authorize = await authorizationService.AuthorizeAsync(User!, room, "StrictRoomPolicy");
-        
+
             if (!authorize.Succeeded) return Forbid();
-        
+
             await propRepository.DeletePropsByRoomAsync(roomId);
         }
 

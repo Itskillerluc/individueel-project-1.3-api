@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using Dapper;
+﻿using Dapper;
 using individueel_project_1._3_api.Dto;
 using individueel_project_1._3_api.Models;
 using Microsoft.Data.SqlClient;
@@ -33,7 +32,7 @@ public class RoomRepository(string connectionString) : IRoomRepository
 					LEFT JOIN auth.AspNetUsers u ON ur.Username = u.Username
 					LEFT JOIN Prop p ON r.RoomId = p.RoomId
 					WHERE u.Username = @userName";
-	    //todo add rooms
+
 	    var rooms = await connection.QueryAsync<Room, bool, string, Prop, Room>(sql, (room, canEdit, user, prop) =>
 	    {
 		    room.Users.Add(new Room.UserEntry(user, canEdit));
@@ -47,7 +46,6 @@ public class RoomRepository(string connectionString) : IRoomRepository
 	    return MergeRooms(rooms).Select(room => room.ToDto());
     }
 	
-	//todo add rooms
     public async Task<RoomRequestDto?> GetRoomByIdAsync(Guid roomId, string username)
     {
 	    await using var connection = new SqlConnection(connectionString);

@@ -2,12 +2,12 @@
 
 public class PropCreateDto
 {
-    public required string PrefabId { get; set; }
-    public required float PosX { get; set; }
-    public required float PosY { get; set; }
-    public required float Rotation { get; set; }
-    public required float ScaleX { get; set; }
-    public required float ScaleY { get; set; }
-    public required int SortingLayer { get; set; }
-    public required Guid RoomId { get; set; }
+    public required string PrefabId { get; init; }
+    public required float PosX { get; init; }
+    public required float PosY { get; init; }
+    public required float Rotation { get; init; }
+    public required float ScaleX { get; init; }
+    public required float ScaleY { get; init; }
+    public required int SortingLayer { get; init; }
+    public required Guid RoomId { get; init; }
 }

@@ -2,7 +2,6 @@
 using individueel_project_1._3_api.Dto;
 using individueel_project_1._3_api.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

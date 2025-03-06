@@ -1,7 +1,5 @@
 ﻿using individueel_project_1._3_api.Dto;
-using individueel_project_1._3_api.Models;
 using individueel_project_1._3_api.Repositories;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -20,7 +18,6 @@ public class UserRoomsController(
     [HttpGet(Name = "GetUsers")]
     public async Task<ActionResult<IEnumerable<UserRoomRequestDto>>> GetUserRoomsAsync([FromQuery] Guid? roomId, [FromQuery] string? username)
     {
-        //todo add null handling
         var user = User?.Identity?.Name!;
         
         if (roomId is null)

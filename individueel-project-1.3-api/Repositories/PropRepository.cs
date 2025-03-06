@@ -2,7 +2,6 @@
 using individueel_project_1._3_api.Dto;
 using individueel_project_1._3_api.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace individueel_project_1._3_api.Repositories;
 
