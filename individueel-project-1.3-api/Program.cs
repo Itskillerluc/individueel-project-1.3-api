@@ -14,6 +14,16 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 var sqlConnectionStringFound= !string.IsNullOrWhiteSpace(connectionString);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "_all",
+        policy  =>
+        {
+            policy.WithOrigins("*");
+        });
+});
+
+
 
 builder.Services.AddSingleton<IPropRepository, PropRepository>(_ => new PropRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
 builder.Services.AddSingleton<IRoomRepository, RoomRepository>(_ => new RoomRepository(connectionString ?? throw new ArgumentException("No connection string found in secrets.json")));
@@ -60,7 +70,7 @@ var app = builder.Build();
 
 
 app.UseHttpsRedirection();
-
+app.UseCors("_all");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
